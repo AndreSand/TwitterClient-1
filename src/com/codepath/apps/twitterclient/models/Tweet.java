@@ -10,8 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -35,7 +33,7 @@ public class Tweet extends Model {
 	private User user;
 	
 	public User getUser() {
-		Log.d("DEBUG", "Current user is: " + user);
+		//Log.d("DEBUG", "Current user is: " + user);
 		// Workaround for an issue with not persisting foreign keys properly in SQLite
 		if (user == null) {
 			user = User.getUser(userId);

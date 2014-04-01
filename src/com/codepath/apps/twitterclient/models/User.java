@@ -6,8 +6,6 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -69,7 +67,7 @@ public class User extends Model {
 			u.statusesCount = jsonObject.getInt("statuses_count");
 			u.followersCount = jsonObject.getInt("followers_count");
 			u.friendsCount = jsonObject.getInt("friends_count");
-			Log.d("DEBUG", "Saving user: " + u);
+			//Log.d("DEBUG", "Saving user: " + u);
 			u.save();
 			
 			//Log.d("DEBUG", "User is now: " + u);

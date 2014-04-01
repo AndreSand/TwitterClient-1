@@ -147,7 +147,10 @@ public class TimelineActivity extends Activity implements
 		String id;
 		if (length > 0) {
 			Tweet t = tweets.get(length - 1);
-			id = t.getTweetId();
+			
+			// Handle case where maxId is inclusive
+			long tempId = Long.parseLong(t.getTweetId()) - 1;
+			id = Long.toString(tempId);
 		}
 		else {
 			id = "9999999999"; //HACK - Fix this later
