@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    style="@style/NoActionBar" >
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" 
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="0dp"                     
+        android:background="#ffffff"
+        android:textColor="#00aef0"
+        
+        android:text="@string/cancel" />
+
+    <TextView
+        android:id="@+id/tvCharactersRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/btnTweet"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="15dp"                     
+        android:layout_alignParentTop="true"
+        android:textColor="#bbbbbb" 
+        android:text="@string/max_tweet_length"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <Button
+        android:id="@+id/btnTweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="0dp" 
+        android:textColor="#00aef0"
+        android:background="#ffffff"                            
+        android:text="@string/tweet" />
+
+    <ImageView
+        android:id="@+id/ivProfileImage"
+        android:contentDescription="@string/profile_image"
+        android:layout_below="@+id/btnCancel"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"                           
+        android:layout_width="30dp"
+    	android:layout_height="30dp" />
+
+    <TextView
+        android:id="@+id/tvUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnCancel" 
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="0dp"                     
+        android:textColor="#292f33"
+        android:layout_toRightOf="@+id/ivProfileImage" />
+
+    <EditText
+        android:id="@+id/etTweetText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivProfileImage"
+        android:layout_alignParentLeft="true"
+        android:textColorHint="#bbbbbb"
+        android:hint="@string/tweet_hint"
+        android:lines="4"
+        android:gravity="bottom|left"
+        android:cursorVisible="true"
+        android:textCursorDrawable="@null"
+        android:textColor="#292f33"
+        android:layout_marginBottom="10dp"
+        
+        android:ems="10"
+        android:maxLength="140" >
+
+        <requestFocus />
+    </EditText>
+
+</RelativeLayout>
