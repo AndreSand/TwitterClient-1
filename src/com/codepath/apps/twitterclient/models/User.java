@@ -6,6 +6,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -28,6 +30,8 @@ public class User extends Model {
 	public int statusesCount;
 	@Column(name = "followersCount")
 	public int followersCount;
+	//@Column(name = "tagLine")
+	public String tagLine;
 	@Column(name = "friendsCount")
 	public int friendsCount;
 	
@@ -52,6 +56,9 @@ public class User extends Model {
 	public int getFollowersCount() {
 		return followersCount;
 	}
+	public String getTagline() {
+		return tagLine;
+	}
 	public int getFriendsCount() {
 		return friendsCount;
 	}
@@ -66,9 +73,10 @@ public class User extends Model {
 			u.profileBackgroundImageUrl = jsonObject.getString("profile_background_image_url");
 			u.statusesCount = jsonObject.getInt("statuses_count");
 			u.followersCount = jsonObject.getInt("followers_count");
+			u.tagLine = jsonObject.getString("description");
 			u.friendsCount = jsonObject.getInt("friends_count");
-			//Log.d("DEBUG", "Saving user: " + u);
-			u.save();
+		//	Log.d("DEBUG", "Saving user: " + u);
+			//u.save();
 			
 			//Log.d("DEBUG", "User is now: " + u);
 		} catch (Exception e) {

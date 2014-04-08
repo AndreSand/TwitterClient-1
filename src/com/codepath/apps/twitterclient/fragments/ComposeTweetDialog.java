@@ -1,4 +1,4 @@
-package com.codepath.apps.twitterclient.activities;
+package com.codepath.apps.twitterclient.fragments;
 
 import org.json.JSONObject;
 
@@ -35,6 +35,8 @@ public class ComposeTweetDialog extends DialogFragment {
 	private TwitterClient restClient;
 	private TextView tvUserName;
 	private ImageView ivProfileImage;
+	private User user;
+	private String replyToId;
 	
 	public ComposeTweetDialog() {
 	}
@@ -43,8 +45,10 @@ public class ComposeTweetDialog extends DialogFragment {
 		void onPostTweet(Tweet tweet);		
 	}
 	
-	public static ComposeTweetDialog newInstance(User user) {
+	public static ComposeTweetDialog newInstance(User user, String replyToId) {
 		ComposeTweetDialog fragment = new ComposeTweetDialog();
+		fragment.user = user;
+		fragment.replyToId = replyToId;
 		return fragment;
 	}
 	
@@ -60,7 +64,7 @@ public class ComposeTweetDialog extends DialogFragment {
 		ivProfileImage = (ImageView)view.findViewById(R.id.ivProfileImage);
 		tvUserName = (TextView)view.findViewById(R.id.tvUserName);
 
-		restClient.getUserInfo(new JsonHttpResponseHandler() {
+		restClient.getUserInfo("nickaiwazian", new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONObject jsonUser) {
 				User u = User.fromJson(jsonUser);
@@ -79,11 +83,10 @@ public class ComposeTweetDialog extends DialogFragment {
 		});		
 
 		btnTweet.setOnClickListener(new OnClickListener() {
-
 		@Override
 		public void onClick(View v) {
 			String tweetText = etTweetText.getText().toString();
-			restClient.postTweet(tweetText, new JsonHttpResponseHandler() {
+			restClient.postTweet(tweetText, replyToId, new JsonHttpResponseHandler() {
 				@Override
 				public void onSuccess(JSONObject jsonTweet) {
 						
@@ -135,8 +138,14 @@ public class ComposeTweetDialog extends DialogFragment {
 			public void afterTextChanged(Editable s) {
 			}
 		});
-				
+		String text = "";
+		if (user != null) {
+			text = "@" + user.screenName + " ";
+			etTweetText.setText(text);
+		}
+		
 		etTweetText.requestFocus();
+		etTweetText.setSelection(text.length());
 		getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		return view;
 	}

@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" 
+    android:layout_height="wrap_content"
     android:background="#ffffff" >
 
     <ImageView
         android:id="@+id/ivProfile"
-        android:contentDescription="@string/profile_image"
         android:layout_width="48dp"
-    	android:layout_height="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp" />
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:contentDescription="@string/profile_image" />
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/ivProfile"
-        android:layout_marginLeft="10dp"
         android:layout_alignTop="@+id/ivProfile"
-        android:textStyle="bold"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="-4dp"
+        android:layout_toRightOf="@+id/ivProfile"
+        android:textColor="#292f33"
         android:textSize="16sp"
-        android:layout_marginTop="-4dp"      
-        android:textColor="#292f33" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvTweetAge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/ivProfile"
         android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/ivProfile"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="-7dp"                     
+        android:layout_marginTop="-7dp"
         android:textColor="#bbbbbb" />
 
     <TextView
@@ -47,7 +47,58 @@
         android:layout_marginRight="20dp"
         android:lineSpacingMultiplier="1.1"
         android:linksClickable="true"
-        android:textSize="16sp"
-        android:textColor="#292f33" />
+        android:textColor="#292f33"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/ivReply"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignLeft="@+id/tvBody"
+        android:layout_below="@+id/tvBody"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:contentDescription="@string/profile_image"
+        android:src="@drawable/ic_reply" />
+
+    <ImageView
+        android:id="@+id/ivRetweet"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignTop="@+id/ivReply"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/ivReply"
+        android:contentDescription="@string/profile_image"
+        android:src="@drawable/ic_retweet" />
+
+    <TextView
+        android:id="@+id/tvRetweetCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivRetweet"
+        android:layout_toRightOf="@+id/ivRetweet"
+        android:text="22"
+        android:textColor="#292f33"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/ivFavorite"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignTop="@+id/tvRetweetCount"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/tvRetweetCount"
+        android:contentDescription="@string/profile_image"
+        android:src="@drawable/ic_favorite" />
+
+    <TextView
+        android:id="@+id/tvFavoriteCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivFavorite"
+        android:layout_toRightOf="@+id/ivFavorite"
+        android:text="32"
+        android:textColor="#292f33"
+        android:textSize="12sp" />
 
 </RelativeLayout>

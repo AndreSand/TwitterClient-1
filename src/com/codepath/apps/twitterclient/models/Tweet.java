@@ -30,6 +30,9 @@ public class Tweet extends Model {
 	@Column(name="createdDate")
 	public String createdDate;
 	
+	public int retweetCount;
+	public int favoriteCount;
+	
 	private User user;
 	
 	public User getUser() {
@@ -54,6 +57,14 @@ public class Tweet extends Model {
 		return retweeted;
 	}
 	
+	public int getFavoriteCount() {
+		return favoriteCount;
+	}
+	
+	public int getRetweetCount() {
+		return retweetCount;
+	}
+	
 	public Date getCreatedDate() {
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy", Locale.getDefault());
 		Date d = null;
@@ -76,8 +87,10 @@ public class Tweet extends Model {
 			tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
 			tweet.userId = tweet.user.getUserId();
 			tweet.createdDate = jsonObject.getString("created_at");
+			tweet.favoriteCount = jsonObject.getInt("favorite_count");
+			tweet.retweetCount = jsonObject.getInt("retweet_count");
 			//Log.d("DEBUG", "Saving tweet: " + tweet);
-			tweet.save();
+			//tweet.save();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;

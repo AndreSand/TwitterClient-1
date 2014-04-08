@@ -5,6 +5,7 @@ import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.util.Log;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -32,6 +33,10 @@ public class TwitterClient extends OAuthBaseClient {
     public TwitterClient(Context context) {
         super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
     }
+    
+    
+    //************************ GET METHODS **********************************/
+
     // Handle requests to get more recent tweets (with sinceId) and older tweets (with maxId)
     public void getHomeTimeline(String sinceId, String maxId, AsyncHttpResponseHandler handler) {
     	String url = getApiUrl("statuses/home_timeline.json");
@@ -44,41 +49,117 @@ public class TwitterClient extends OAuthBaseClient {
     		params = new RequestParams();
     		params.put("since_id", sinceId);
     	}    	
-        //Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
+        Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
         client.get(url, params, handler);
     }    
 
-    public void postTweet(String status, AsyncHttpResponseHandler handler) {
+    public void getMentions(String sinceId, String maxId, AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl("statuses/mentions_timeline.json");
+    	RequestParams params = null;
+    	if (maxId != null) {
+    		params = new RequestParams();
+    		params.put("max_id", maxId);
+    	}
+    	if (sinceId != null) {
+    		params = new RequestParams();
+    		params.put("since_id", sinceId);
+    	}    	
+    	Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
+        client.get(url, params, handler);
+    }    
+    
+    public void getUserInfo(String userName, AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl("users/show.json");
+
+		RequestParams params = new RequestParams();
+		params.put("screen_name", userName);
+        //Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
+		client.get(url, params, handler);
+    }
+
+    public void getMyInfo(AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl("account/verify_credentials.json");
+        //Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
+        Log.d("DEBUG", "About to send request to get my info");
+    	client.get(url, null, handler);
+    }
+
+    public void getUserTimeline(String userName, String sinceId, String maxId, AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl("statuses/user_timeline.json");
+    	RequestParams params = null;
+    	if (userName != null) {
+        	params = new RequestParams();
+        	params.put("screen_name", userName);	
+    	}
+    	if (maxId != null) {
+        	params = new RequestParams();
+    		params.put("max_id", maxId);
+    	}
+    	if (sinceId != null) {
+        	params = new RequestParams();
+    		params.put("since_id", sinceId);
+    	}    	
+        Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
+    	client.get(url, params, handler);
+    }
+
+//    https://api.twitter.com/1.1/search/tweets.json?q=%40twitterapi
+    public void getSearch(String query, AsyncHttpResponseHandler handler) {
+    	String urlSuffix = "search/tweets.json?q=" + query;
+    	String url = getApiUrl(urlSuffix);
+    	RequestParams params = new RequestParams();
+    	params.put("q", query);
+        //Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
+        Log.d("DEBUG", "About to send request: " + url);
+    	client.get(url, null, handler);
+    }
+
+    
+    //************************POST METHODS**********************************/
+    
+    public void postTweet(String status, String replyToId, AsyncHttpResponseHandler handler) {
     	String url = getApiUrl("statuses/update.json");
 
 		RequestParams params = new RequestParams();
 		params.put("status", status);
-        //Log.d("DEBUG", "About to post tweet: " + url + " with params: " + params);
+		if (replyToId != null) {
+			params.put("in_reply_to_status_id", replyToId);
+		}
+        Log.d("DEBUG", "About to post tweet: " + url + " with params: " + params);
         client.post(url, params, handler);        
     }
 
-    public void getUserInfo(AsyncHttpResponseHandler handler) {
-    	String url = getApiUrl("users/show.json");
+    public void postRetweet(String id, AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl(String.format("statuses/retweet/%s.json", id));
+    	
+        Log.d("DEBUG", "About to post tweet: " + url);
+        client.post(url, null, handler);        
+    }
+    
+    public void postFavoriteCreate(String id, AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl("favorites/create.json");
 
 		RequestParams params = new RequestParams();
-		params.put("screen_name", "nickaiwazian");
-        //Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
-		client.get(url, params, handler);
+		params.put("id", id);
+        Log.d("DEBUG", "About to favorite tweet: " + url + " with params: " + params);
+        client.post(url, params, handler);        
     }
+
+    public void postFavoriteDestroy(String id, AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl("favorites/destory.json");
+
+		RequestParams params = new RequestParams();
+		params.put("id", id);
+        Log.d("DEBUG", "About to unfavorite tweet: " + url + " with params: " + params);
+        client.post(url, params, handler);        
+    }
+
+    //************************ HELPERS **********************************/
 
     public boolean isOnline() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         
         return connectivityManager.getActiveNetworkInfo() != null && 
            connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
-    }
-    
-    /* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
-     * 	  i.e getApiUrl("statuses/home_timeline.json");
-     * 2. Define the parameters to pass to the request (query or body)
-     *    i.e RequestParams params = new RequestParams("foo", "bar");
-     * 3. Define the request method and make a call to the client
-     *    i.e client.get(apiUrl, params, handler);
-     *    i.e client.post(apiUrl, params, handler);
-     */
+    }    
 }
