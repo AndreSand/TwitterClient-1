@@ -26,18 +26,17 @@ import com.codepath.apps.twitterclient.fragments.MentionsFragment;
 import com.codepath.apps.twitterclient.fragments.TweetsListFragment;
 import com.codepath.apps.twitterclient.models.Tweet;
 
-public class Tweets extends FragmentActivity implements
-		ComposeTweetDialogListener, TabListener {
+public class HomeActivity extends FragmentActivity implements
+		ComposeTweetDialogListener, TabListener, TweetsListFragment.OnNetworkRequestEvent {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); 
-		setContentView(R.layout.activity_timeline);
+		setContentView(R.layout.activity_home);
 
 		setupNavigationTabs();
 		handleIntent(getIntent());
-
 	}
 
 	private void setupNavigationTabs() {
@@ -59,6 +58,7 @@ public class Tweets extends FragmentActivity implements
 		actionBar.selectTab(tabHome);
 
 	}
+	
 	public void handleComposeTweet() {
 		showComposeTweetDialog();
 	}
@@ -74,7 +74,8 @@ public class Tweets extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		// Inflate the menu; this adds items to the action bar if it is present.
-		inflater.inflate(R.menu.timeline, menu);
+		inflater.inflate(R.menu.home, menu);
+		
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.miSearch).getActionView();
@@ -106,7 +107,6 @@ public class Tweets extends FragmentActivity implements
 	public void onComposeTweet(MenuItem item) {
 		Log.d("DEBUG", "click compose");
 		handleComposeTweet();
-
 	}
 	
 	@Override
@@ -158,6 +158,16 @@ public class Tweets extends FragmentActivity implements
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onNetworkRequestInitiated() {
+		setProgressBarIndeterminateVisibility(true);
+	}
+
+	@Override
+	public void onNetworkRequestCompleted() {
+		setProgressBarIndeterminateVisibility(false);		
 	}
 
 }

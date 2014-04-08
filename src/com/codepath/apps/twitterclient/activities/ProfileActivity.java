@@ -2,7 +2,6 @@ package com.codepath.apps.twitterclient.activities;
 
 import org.json.JSONObject;
 
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -13,12 +12,13 @@ import android.widget.TextView;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.core.TwitterClientApp;
+import com.codepath.apps.twitterclient.fragments.TweetsListFragment;
 import com.codepath.apps.twitterclient.fragments.UserTimelineFragment;
 import com.codepath.apps.twitterclient.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class ProfileActivity extends FragmentActivity {
+public class ProfileActivity extends FragmentActivity implements TweetsListFragment.OnNetworkRequestEvent {
 	public static final String USER_SCREENNAME_EXTRA = "screenName";
 	
 
@@ -85,5 +85,15 @@ public class ProfileActivity extends FragmentActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onNetworkRequestInitiated() {
+		setProgressBarIndeterminateVisibility(true);
+	}
+
+	@Override
+	public void onNetworkRequestCompleted() {
+		setProgressBarIndeterminateVisibility(false);		
 	}
 }

@@ -1,7 +1,9 @@
 package com.codepath.apps.twitterclient.fragments;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +16,6 @@ import com.codepath.apps.twitterclient.adapters.TweetsAdapter;
 import com.codepath.apps.twitterclient.core.TwitterClientApp;
 import com.codepath.apps.twitterclient.helpers.TwitterClient;
 import com.codepath.apps.twitterclient.interfaces.EndlessScrollListener;
-import com.codepath.apps.twitterclient.interfaces.ILoadData;
 import com.codepath.apps.twitterclient.models.Tweet;
 
 import eu.erikw.PullToRefreshListView;
@@ -25,59 +26,44 @@ public abstract class TweetsListFragment extends Fragment {
 	private TweetsAdapter adapter;
 	private ArrayList<Tweet> tweets;
 	private PullToRefreshListView listView;
-	private ILoadData dataLoader;
 	protected TwitterClient twitterClient;
+	private OnNetworkRequestEvent listener;
 
+
+	@Override
+	public void onAttach(Activity activity) {
+	    super.onAttach(activity);
+	    if (activity instanceof OnNetworkRequestEvent) {
+	        listener = (OnNetworkRequestEvent) activity;
+	    } else {
+	        throw new ClassCastException(activity.toString()
+	            + " must implement TweetsListFragment.OnNetworkRequestEvent listener");
+	    }
+	 }
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		tweets = new ArrayList<Tweet>();
+		adapter = new TweetsAdapter(getActivity(), tweets);	
+		twitterClient = TwitterClientApp.getRestClient();
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_tweets_list, container, false); 
 		listView = (PullToRefreshListView) v.findViewById(R.id.lvTweets);
-		return v;
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		tweets = new ArrayList<Tweet>();
-		adapter = new TweetsAdapter(getActivity(), tweets);
-		twitterClient = TwitterClientApp.getRestClient();
-		// RACE condition - should be in onCreateView, v.findViewById()
-		// Should not reach up to activity
-		// Arguments cannot be passed into static fragment
-		// Move more things to onCreateView instead of onActivityCreated
-		//listView = (PullToRefreshListView) getActivity().findViewById(R.id.lvTweets);
 		listView.setAdapter(adapter);
-
-		// Simple connectivity check for now. Should expand this to receive
-		// broadcast intents when network status changes.
-		if (TwitterClientApp.getRestClient().isOnline()) {
-			Log.d("DEBUG", "Detected we are online");
-			dataLoader = new ILoadData() {
-				@Override
-				public void getMoreTweets(String screenName, String sinceId, String maxId) {
-					getActivity().setProgressBarIndeterminateVisibility(true);
-					loadMoreDataFromApi(screenName, sinceId, maxId);
-				}
-			};
-		} else { // No network connection, load data from SQLite
-			Log.d("DEBUG", "Detected we are offline");
-			dataLoader = new ILoadData() {
-				@Override
-				public void getMoreTweets(String screenName, String sinceId, String maxId) {
-					loadMoreDataFromSql(screenName, sinceId, maxId);
-				}
-			};
-		}
-
+		
 		listView.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
 				String sinceId = getSinceId();
 				Log.d("DEBUG", "OnRefresh is being called");
 				Log.d("DEBUG", "SinceId is: " + sinceId);
-				dataLoader.getMoreTweets(getScreenName(), sinceId, null);
+				getActivity().setProgressBarIndeterminateVisibility(true);
+				loadMoreDataFromApi(sinceId, null);
 			}
 		});
 
@@ -86,22 +72,30 @@ public abstract class TweetsListFragment extends Fragment {
 			public void onLoadMore(int page, int totalItemsCount) {
 				String maxId = getMaxId();
 				Log.d("DEBUG", "Page: " + page + " totalItemsCount: " + totalItemsCount + "currentMaxId: " + maxId);
-				dataLoader.getMoreTweets(getScreenName(), null, maxId);
+				listener.onNetworkRequestInitiated();
+				loadMoreDataFromApi(null, maxId);
 			}
 		});
 
-
-		// Log.d("DEBUG", "Adding more tweets from network for the first time");
-		// adapter.addAll(Tweet.fromJson(jsonTweets));
-		// Log.d("DEBUG", "Adding more tweets from network not first time");
-
+		return v;
 	}
 
-	protected abstract void loadMoreDataFromApi(String screenName, String sinceId, String maxId);
+	// Define the events that the fragment will use to communicate
+	public interface OnNetworkRequestEvent {
+		public void onNetworkRequestInitiated();
+	    public void onNetworkRequestCompleted();
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
-	protected abstract void loadMoreDataFromSql(String screenName, String sinceId, String maxId);
+		//loadMoreDataFromApi(getSinceId(), maxId);
+				
+	}
 
-	protected abstract String getScreenName();
+	protected abstract void loadMoreDataFromApi(String sinceId, String maxId);
+
 	
 	private String getSinceId() {
 		if (adapter.getCount() > 0) {
@@ -139,6 +133,16 @@ public abstract class TweetsListFragment extends Fragment {
 	
 	public void markRefreshComplete() {
 		listView.onRefreshComplete();
-		getActivity().setProgressBarIndeterminateVisibility(false);
+		listener.onNetworkRequestCompleted();
 	}
+	
+}
+
+class TweetComparator implements Comparator<Tweet> {
+    @Override
+    public int compare(Tweet a, Tweet b) {
+    	Long aLong = Long.parseLong(a.getTweetId());
+    	Long bLong = Long.parseLong(b.getTweetId());
+        return bLong.compareTo(aLong);
+    }
 }

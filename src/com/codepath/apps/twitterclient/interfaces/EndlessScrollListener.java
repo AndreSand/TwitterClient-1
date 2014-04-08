@@ -1,6 +1,5 @@
 package com.codepath.apps.twitterclient.interfaces;
 
-import android.util.Log;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 

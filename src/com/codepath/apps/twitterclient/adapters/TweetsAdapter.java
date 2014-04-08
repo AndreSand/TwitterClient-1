@@ -32,11 +32,11 @@ import com.codepath.apps.twitterclient.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class TweetsAdapter extends ArrayAdapter<Tweet>{
+public class TweetsAdapter extends ArrayAdapter<Tweet> {
 
 	Typeface mediumType;
-	int favoriteColor = Color.parseColor("#EE4000");
-	int retweetColor = Color.parseColor("#00ff00");
+	int favoriteColor = Color.parseColor("#E56717");
+	int retweetColor = Color.parseColor("#308014");
 	int defaultColor = Color.parseColor("#000000");
 	TwitterClient restClient;
 	
@@ -66,8 +66,8 @@ public class TweetsAdapter extends ArrayAdapter<Tweet>{
 		ImageView replyView = (ImageView) view.findViewById(R.id.ivReply);
 		final TextView retweetCountView = (TextView) view.findViewById(R.id.tvRetweetCount);
 		final TextView favoriteCountView = (TextView) view.findViewById(R.id.tvFavoriteCount);
-		ImageView retweetImageView = (ImageView) view.findViewById(R.id.ivRetweet);
-		ImageView favoriteImageView = (ImageView) view.findViewById(R.id.ivFavorite);
+		final ImageView retweetImageView = (ImageView) view.findViewById(R.id.ivRetweet);
+		final ImageView favoriteImageView = (ImageView) view.findViewById(R.id.ivFavorite);
 		
 		imageView.setTag(tweet.getUser().getScreenName());
 		imageView.setOnClickListener(new OnClickListener() {
@@ -125,7 +125,7 @@ public class TweetsAdapter extends ArrayAdapter<Tweet>{
 							Log.d("DEBUG", "Got UNsuccessful post response");
 						}			
 					});	
-					favoriteCountView.setTextColor(defaultColor);			
+					favoriteCountView.setTextColor(defaultColor);
 					incrementTextViewCount(favoriteCountView, -1);
 				}
 				else {
@@ -139,7 +139,7 @@ public class TweetsAdapter extends ArrayAdapter<Tweet>{
 							Log.d("DEBUG", "Got UNsuccessful post response");
 						}			
 					});	
-					favoriteCountView.setTextColor(favoriteColor);			
+					favoriteCountView.setTextColor(favoriteColor);	
 					incrementTextViewCount(favoriteCountView, 1);					
 				}
 			}

@@ -103,15 +103,12 @@ public class TwitterClient extends OAuthBaseClient {
     	client.get(url, params, handler);
     }
 
-//    https://api.twitter.com/1.1/search/tweets.json?q=%40twitterapi
     public void getSearch(String query, AsyncHttpResponseHandler handler) {
-    	String urlSuffix = "search/tweets.json?q=" + query;
-    	String url = getApiUrl(urlSuffix);
+    	String url = getApiUrl("search/tweets.json");
     	RequestParams params = new RequestParams();
     	params.put("q", query);
-        //Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
-        Log.d("DEBUG", "About to send request: " + url);
-    	client.get(url, null, handler);
+        Log.d("DEBUG", "About to send request to: " + url + " with params: " + params);
+    	client.get(url, params, handler);
     }
 
     

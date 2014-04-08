@@ -6,30 +6,29 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.codepath.apps.twitterclient.core.TwitterClientApp;
-import com.codepath.apps.twitterclient.helpers.TwitterClient;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class UserTimelineFragment extends TweetsListFragment {
 
 	private String userName;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		userName = getArguments().getString("userName", "");	
-
 	}
 	
 	@Override
-	protected void loadMoreDataFromApi(String screenName, String sinceId, String maxId) {
-		twitterClient.getUserTimeline(screenName, sinceId, maxId,
+	protected void loadMoreDataFromApi(String sinceId, String maxId) {
+		twitterClient.getUserTimeline(userName, sinceId, maxId,
 				new JsonHttpResponseHandler() {
 					@Override
 					public void onSuccess(JSONArray jsonTweets) {
 						Log.d("DEBUG", "Got user timeline success");
 						Log.d("DEBUG", Tweet.fromJson(jsonTweets).toString());
 						getAdapter().addAll(Tweet.fromJson(jsonTweets));
+						getAdapter().sort(new TweetComparator());
 						markRefreshComplete();
 					}
 
@@ -56,16 +55,4 @@ public class UserTimelineFragment extends TweetsListFragment {
         return fragment;
     }
 	
-	@Override
-	protected void loadMoreDataFromSql(String screenName, String sinceId, String maxId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected String getScreenName() {
-	
-		return userName;
-	}
-
 }

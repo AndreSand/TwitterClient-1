@@ -1,6 +1,8 @@
 package com.codepath.apps.twitterclient.fragments;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -21,28 +23,42 @@ public class SearchFragment extends TweetsListFragment {
 	}
 	
     public static SearchFragment newInstance(String query) {
-        SearchFragment fragment = new SearchFragment();
+        Log.d("DEBUG", "New instance of search fragment being created");
+    	SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
         args.putString("query", query);
         fragment.setArguments(args);
         return fragment;
     }
+    
 	@Override
-	protected void loadMoreDataFromApi(String screenName, String sinceId,
-			String maxId) {
+	protected void loadMoreDataFromApi(String sinceId, String maxId) {
 		Log.d("DEBUG", "Got a call to load more data from api in search");
 		twitterClient.getSearch(query,
 				new JsonHttpResponseHandler() {
 					@Override
-					public void onSuccess(JSONArray jsonTweets) {
+					public void onSuccess(JSONObject jsonSearchResult) {
 						Log.d("DEBUG", "Got a successful response from search!");
-						getAdapter().addAll(Tweet.fromJson(jsonTweets));
+						try {
+							JSONArray jsonTweets = jsonSearchResult.getJSONArray("statuses");
+							getAdapter().addAll(Tweet.fromJson(jsonTweets));
+							getAdapter().sort(new TweetComparator());
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
 						markRefreshComplete();
 					}
 
 					@Override
+					public void onFailure(Throwable arg0) {
+						Log.d("DEBUG", "Got UNsuccessful search");
+						Toast.makeText(getActivity(), "FAIL",
+								Toast.LENGTH_LONG).show();
+					}
+
+					@Override
 					public void handleFailureMessage(Throwable e, String responseBody) {
-						Log.d("DEBUG", "FAILURE!!!" + responseBody);
+						Log.d("DEBUG", "FAILURE in search!!!" + responseBody);
 					}
 
 				}
@@ -50,18 +66,4 @@ public class SearchFragment extends TweetsListFragment {
 
 		
 	}
-
-	@Override
-	protected void loadMoreDataFromSql(String screenName, String sinceId,
-			String maxId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected String getScreenName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
